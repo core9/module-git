@@ -5,10 +5,14 @@ import java.util.Map;
 
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
 
 @PluginImplementation
 public class GitRepositoryManagerImpl implements GitRepositoryManager {
+	
+	private static final Logger LOG = Logger.getLogger(GitRepositoryManagerImpl.class);
 	
 	private Map<String,GitRepositoryImpl> repositories = new HashMap<String,GitRepositoryImpl>();
 
@@ -25,7 +29,7 @@ public class GitRepositoryManagerImpl implements GitRepositoryManager {
 		try {
 			((GitRepositoryImpl) repo).init();
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			LOG.error("Couldn't execute git init: " + e.getMessage());
 		}
 	}
 
@@ -33,8 +37,8 @@ public class GitRepositoryManagerImpl implements GitRepositoryManager {
 	public void pull(GitRepository repo) {
 		try {
 			((GitRepositoryImpl) repo).pull();
-		} catch (GitAPIException e) {
-			e.printStackTrace();
+		} catch (GitAPIException | JGitInternalException e) {
+			LOG.error("Couldn't execute git pull: " + e.getMessage());
 		}
 	}
 
@@ -43,7 +47,7 @@ public class GitRepositoryManagerImpl implements GitRepositoryManager {
 		try {
 			((GitRepositoryImpl) repo).push();
 		} catch (GitAPIException e) {
-			e.printStackTrace();
+			LOG.error("Couldn't execute git push: " + e.getMessage());
 		}
 		
 	}

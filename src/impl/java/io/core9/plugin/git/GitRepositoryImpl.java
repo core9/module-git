@@ -9,6 +9,7 @@ import org.eclipse.jgit.api.PullCommand;
 import org.eclipse.jgit.api.PushCommand;
 import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
@@ -81,7 +82,11 @@ public class GitRepositoryImpl implements GitRepository {
 		if(new File(getLocalPath() + "/.git").exists()) {
 			git = Git.init().setDirectory(new File(getLocalPath())).call();
 			git.reset().setMode(ResetType.HARD).call();
-			pull();
+			try {
+				pull();
+			} catch (GitAPIException | JGitInternalException e) {
+				log.error("Couldn't execute git pull: " + e.getMessage());
+			}
 		} else {
 			log.info("Cloning from: " + getOrigin());
 			CloneCommand clone = Git.cloneRepository();
@@ -102,7 +107,7 @@ public class GitRepositoryImpl implements GitRepository {
 	 * @return
 	 * @throws GitAPIException 
 	 */
-	public GitRepositoryImpl pull() throws GitAPIException {
+	public GitRepositoryImpl pull() throws GitAPIException, JGitInternalException {
 		log.info("Pulling from: " + getOrigin());
 		PullCommand pull = git.pull();
 		if(cp != null) {
