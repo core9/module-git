@@ -124,6 +124,11 @@ public class GitRepositoryImpl implements GitRepository {
 
 	public GitRepositoryImpl push() throws GitAPIException {
 		log.info("Commit on repo: " + this.getLocalPath());
+		
+		if(new File(getLocalPath() + "/.git").exists()) {
+			git = Git.init().setDirectory(new File(getLocalPath())).call();
+		}
+		
 		git.add().addFilepattern(".").call();
 		git.commit().setMessage("Updated features").call();
 		PushCommand push = git.push();
