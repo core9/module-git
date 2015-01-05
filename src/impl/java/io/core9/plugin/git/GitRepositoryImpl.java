@@ -129,6 +129,13 @@ public class GitRepositoryImpl implements GitRepository {
 		PushCommand push = git.push();
 		if(cp != null) {
 			push.setCredentialsProvider(cp);
+		}else{
+			if(getUsername() != null) {
+				cp = new UsernamePasswordCredentialsProvider(getUsername(), getPassword());
+				push.setCredentialsProvider(cp);
+			} else {
+				cp = null;
+			}
 		}
 		log.info("Pushing to remote: " + this.getOrigin());
 		push.call();
