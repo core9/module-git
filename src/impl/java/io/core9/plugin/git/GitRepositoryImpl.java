@@ -97,6 +97,7 @@ public class GitRepositoryImpl implements GitRepository {
 				.setDirectory(new File(getLocalPath()))
 				.setURI(origin)
 				.call();
+			git.close();
 		}
 		initialized = true;
 		return this;
